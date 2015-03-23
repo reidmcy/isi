@@ -4,7 +4,7 @@ import csv
 import sys
 import networkx as nx
 
-outfile = "country-country.graphml"
+outfile = "org-org.graphml"
 
 class BadPaper(Warning):
     pass
@@ -66,42 +66,49 @@ def isiParser(isifile):
     finally:
         return plst
 
+def getInstitute(s):
+    if s[0] == '[':
+        s = s.split('] ')[1]
+    clev = s.split(', ')
+    if clev[-1] == 'Tunisia.':
+        return clev[0]
+    else:
+        return ''
+
 def graphAdder(plst, grph):
     for p in plst:
         try:
             for loc1 in p['C1']:
-                c1 = loc1.split(', ')[-1][:-1]
-                if c1[-3:] == 'USA':
-                    c1 = 'USA'
-                if not grph.has_node(c1):
-                    grph.add_node(c1)
-                for loc2 in p['C1'][p['C1'].index(loc1) + 1:]:
-                    c2 = loc2.split(', ')[-1][:-1]
-                    if c2[-3:] == 'USA':
-                        c2 = 'USA'
-                    if grph.has_edge(c1, c2):
-                        grph[c1][c2]['weight'] += 1
-                    else:
-                        print str(c1) + ' - ' + str(c2)
-                        grph.add_edge(c1, c2, weight = 1)
+                c1 = getInstitute(loc1)
+                if c1:
+                    if not grph.has_node(c1):
+                        grph.add_node(c1)
+                    for loc2 in p['C1'][p['C1'].index(loc1) + 1:]:
+                        c2 = getInstitute(loc2)
+                        if c2:
+                            if grph.has_edge(c1, c2):
+                                grph[c1][c2]['weight'] += 1
+                            else:
+                                print str(c1) + ' - ' + str(c2)
+                                grph.add_edge(c1, c2, weight = 1)
         except KeyError as e:
             print "Key Error"
             print p.keys()
 
 if __name__ == '__main__':
     if os.path.isfile(outfile):
-        #Checks if the output csv already exists and terminates if so
+        #Checks if the output already exists and terminates if so
         print outfile +  " already exists\nexisting"
         #sys.exit()
         os.remove(outfile)
     flist = [f for f in os.listdir(".") if f.endswith(".isi")]
     if len(flist) == 0:
         #checks for any valid files
-        print "No txt Files"
+        print "No isi Files"
         sys.exit()
     else:
         #Tells how many files were found
-        print "Found " + str(len(flist)) + " txt files"
+        print "Found " + str(len(flist)) + " isi files"
     G = nx.Graph()
     for isi in flist:
         try:

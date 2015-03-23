@@ -210,7 +210,7 @@ if __name__ == '__main__':
     else:
         #Tells how many files were found
         print "Found " + str(len(flist)) + FileSuffix + "  files"
-    csvOut= csv.DictWriter(open(outfile, 'w'), csvHeader, quotechar='"', quoting=csv.QUOTE_ALL)
+    csvOut = csv.DictWriter(open(outfile, 'w'), csvHeader, quotechar='"', quoting= csv.QUOTE_ALL)
     csvOut.writeheader()
     errorsFound = []
     for isi in flist:

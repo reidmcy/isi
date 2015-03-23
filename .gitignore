@@ -7,8 +7,10 @@ isi_rip.logined.sh
 # hide our data files
 # (these are paywalled!!)
 *.isi
+*.csv
 #Derived from .isi
 *.csv
+*.graphml
 
 
 #-------------------------------------------------------
